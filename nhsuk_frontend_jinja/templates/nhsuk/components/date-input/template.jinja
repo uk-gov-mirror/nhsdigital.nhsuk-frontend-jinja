@@ -114,9 +114,9 @@
 {%- endmacro -%}
 
 {#- Determine if any date input item has an error #}
-{%- set ns_err = namespace(anyItemHasError=false) %}
+{%- set nsErr = namespace(anyItemHasError=false) %}
 {% for item in dateInputItems %}
-  {% set ns_err.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else ns_err.anyItemHasError %}
+  {% set nsErr.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else nsErr.anyItemHasError %}
 {% endfor -%}
 
 {#- Capture the HTML so we can optionally nest it in a fieldset -#}
@@ -150,7 +150,7 @@
     {% endif %}
     {% for item in dateInputItems %}
       {% if item %}
-        {{- _dateInputItem(params, item, ns_err.anyItemHasError) | trim | indent(4, true) }}
+        {{- _dateInputItem(params, item, nsErr.anyItemHasError) | trim | indent(4, true) }}
       {% endif %}
     {% endfor %}
     {% if params.formGroup.afterInputs %}

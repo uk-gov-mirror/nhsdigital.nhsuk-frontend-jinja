@@ -20,9 +20,9 @@
 {#- Determine if we need 2 or 3 columns #}
 {%- set ns = namespace(hasActions=false) %}
 {% for row in rows %}
-  {% set row_actions_obj = row.get("actions") %}
-  {% set row_actions = row_actions_obj.get("items", []) if row_actions_obj is mapping else [] %}
-  {% set ns.hasActions = true if row_actions | length else ns.hasActions %}
+  {% set rowActionsObj = row.get("actions") %}
+  {% set rowActions = rowActionsObj.get("items", []) if rowActionsObj is mapping else [] %}
+  {% set ns.hasActions = true if rowActions | length else ns.hasActions %}
 {% endfor -%}
 
 {%- set summaryListHtml %}

@@ -63,8 +63,8 @@
   {% set classNames = classNames ~ " " ~ params.classes %}
 {% endif %}
 
-{%- set actions_obj = params.get("actions") if params is mapping else none %}
-{%- set actions = actions_obj.get("items", []) | select("mapping") | list if actions_obj is mapping and actions_obj.get("items", []) | length else [] %}
+{%- set actionsObj = params.get("actions") if params is mapping else none %}
+{%- set actions = actionsObj.get("items", []) | select("mapping") | list if actionsObj is mapping and actionsObj.get("items", []) | length else [] %}
 
 {%- set image = {
   "src": params.imgURL,
