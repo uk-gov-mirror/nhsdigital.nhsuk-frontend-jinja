@@ -18,7 +18,7 @@ nunjucks_root = (
 jinja_root = repo_root / "nhsuk_frontend_jinja" / "templates" / "nhsuk" / "components"
 
 UNQUOTED_KEY = re.compile(r"^(?P<leading_space>\s*)(?P<name>\w+): ")
-INLINE_UNQUOTED_KEY = re.compile(r"(?P<prefix>[{,]\s*)(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*:")
+INLINE_UNQUOTED_KEY = re.compile(r"(?P<prefix>[{,]\s*)(?P<name>[A-Za-z_]\w*)\s*:")
 PARAMS_ITEMS = re.compile(r"\bparams\.items\b")
 PARAMS_VALUES = re.compile(r"\bparams\.values\b")
 ITEM_ITEMS = re.compile(r"\bitem\.items\b")
