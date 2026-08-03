@@ -35,5 +35,8 @@
   <h2 class="nhsuk-u-visually-hidden">
     {{- params.visuallyHiddenText | default("Contents", true) -}}
   </h2>
-  {{ _contentsList((params.get("items", []) if params else [])) | trim | indent(2) }}
+{#- Jinja compatibility - avoid referencing params.items directly
+  as it clashes with dict.items() -#}
+{%- set items = params.get("items", []) if params else [] -%}
+  {{ _contentsList(items) | trim | indent(2) }}
 </nav>

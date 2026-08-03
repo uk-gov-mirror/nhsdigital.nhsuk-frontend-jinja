@@ -28,6 +28,10 @@
   {% set classNamesFormGroup = classNamesFormGroup ~ " " ~ params.formGroup.classes %}
 {% endif %}
 
+{#- Jinja compatibility - avoid referencing params.items directly
+  as it clashes with dict.items() -#}
+{%- set items = params.get("items", []) if params else [] -%}
+
 {#- If an id 'prefix' is not passed, fall back to using the name attribute
   instead. We need this for error messages and hints as well -#}
 {% set idPrefix = params.idPrefix if params.idPrefix else params.name %}
@@ -123,7 +127,7 @@
     {% if params.formGroup.beforeInputs %}
     {{ params.formGroup.beforeInputs.html | safe | trim | indent(4) if params.formGroup.beforeInputs.html else params.formGroup.beforeInputs.text }}
     {% endif %}
-    {% for item in (params.get("items", []) if params else []) %}
+    {% for item in items %}
       {% if item %}
         {{- _radioItem(params, item, loop.index) -}}
       {% endif %}
