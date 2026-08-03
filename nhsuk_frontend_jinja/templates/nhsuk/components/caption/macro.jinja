@@ -1,3 +1,6 @@
-{% macro caption(params) %}
+{% macro caption(params, caller=None) %}
+  {%- if caller -%}
+  {# noop for Jinja support #}
+  {%- endif -%}
   {%- include "nhsuk/components/caption/template.jinja" -%}
 {% endmacro %}

@@ -1,4 +1,4 @@
-{% macro button(params) %}
+{% macro button(params, caller=None) %}
   {%- if caller -%}
   {# noop for Jinja support #}
   {%- endif -%}

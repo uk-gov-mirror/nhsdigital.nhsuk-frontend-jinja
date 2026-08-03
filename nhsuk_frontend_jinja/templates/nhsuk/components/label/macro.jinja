@@ -1,4 +1,4 @@
-{% macro label(params) %}
+{% macro label(params, caller=None) %}
   {%- if caller -%}
   {# noop for Jinja support #}
   {%- endif -%}

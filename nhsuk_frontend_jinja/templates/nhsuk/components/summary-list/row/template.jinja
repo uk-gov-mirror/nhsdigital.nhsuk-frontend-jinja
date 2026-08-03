@@ -3,23 +3,18 @@
 {#- Set classes for this component #}
 {%- set classNames = "nhsuk-summary-list__row" -%}
 
-{%- set actions = params.actions["items"] | select("mapping") | list
-  if params.actions
-    and params.actions["items"] is defined
-    and params.actions["items"] | length
-  else []
--%}
+{%- set actions = (params.get("actions") or {}).get("items", []) | select("mapping") | list if (params.get("actions") or {}).get("items", []) | length else [] %}
 
 {%- if parent.hasActions and not actions | length %}
   {% set classNames = classNames ~ " nhsuk-summary-list__row--no-actions" %}
 {% endif %}
 
-{%- if params.border is sameas false and
+{%- if params.border is false and
   not (params.classes and "nhsuk-summary-list__row--no-border" in params.classes) and
   not (parent.params.classes and (
     "nhsuk-summary-list--no-border" in parent.params.classes or
     "nhsuk-summary-list--no-last-row-border" in parent.params.classes)) and
-  not (parent.params.lastRowBorder is sameas false and parent.loop.last) %}
+  not (parent.params.lastRowBorder is false and parent.loop.last) %}
   {% set classNames = classNames ~ " nhsuk-summary-list__row--no-border" %}
 {% endif %}
 

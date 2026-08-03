@@ -63,12 +63,8 @@
   {% set classNames = classNames ~ " " ~ params.classes %}
 {% endif %}
 
-{%- set actions = params.actions["items"] | select("mapping") | list
-  if params.actions
-    and params.actions["items"] is defined
-    and params.actions["items"] | length
-  else []
--%}
+{%- set actions_obj = params.get("actions") if params is mapping else none %}
+{%- set actions = actions_obj.get("items", []) | select("mapping") | list if actions_obj is mapping and actions_obj.get("items", []) | length else [] %}
 
 {%- set image = {
   "src": params.imgURL,
@@ -82,7 +78,7 @@
 
 {%- set headingVisuallyHiddenText %}
   {%- if params.headingVisuallyHiddenText -%}
-    {{ params.headingVisuallyHiddenText }}
+    {{ params.headingVisuallyHiddenText | trim }}
   {%- elif variant == "emergency" -%}
     Immediate action required
   {%- elif variant == "urgent" -%}
@@ -120,7 +116,8 @@
   </a>
 {%- elif params.headingVisuallyHiddenText %}
   <span role="text">
-    <span class="nhsuk-u-visually-hidden">{{- params.headingVisuallyHiddenText -}}:</span> {{ params.heading }}
+    <span class="nhsuk-u-visually-hidden">{{ params.headingVisuallyHiddenText }}: </span>
+    {{- params.heading }}
   </span>
 {%- else %}
   {{ params.heading }}
@@ -173,11 +170,13 @@
   {% if not isCareCard and not actions | length and (params.heading or params.headingHtml) %}
     {{ _cardHeading(params, classNamesHeading) | trim | indent(4) }}
   {% endif %}
-  {% if caller or params.descriptionHtml %}
-    {{ caller() if caller else params.descriptionHtml | safe | trim | indent(4) }}
+  {% if caller %}
+    {{- caller() }}
+  {% elif params.descriptionHtml %}
+    {{ params.descriptionHtml | safe | trim | indent(4) }}
   {% elif params.description %}
     <p class="nhsuk-card__description">
-      {{- params.description -}}
+      {{- params.description | trim | indent(4) -}}
     </p>
   {% endif %}
   {% if "nhsuk-card--primary" in classNames %}

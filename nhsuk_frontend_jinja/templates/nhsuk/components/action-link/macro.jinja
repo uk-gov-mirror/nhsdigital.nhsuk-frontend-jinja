@@ -1,3 +1,6 @@
-{% macro actionLink(params) %}
+{% macro actionLink(params, caller=None) %}
+  {%- if caller -%}
+  {# noop for Jinja support #}
+  {%- endif -%}
   {%- include "nhsuk/components/action-link/template.jinja" -%}
 {% endmacro %}

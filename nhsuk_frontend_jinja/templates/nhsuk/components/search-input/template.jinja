@@ -31,7 +31,7 @@
 {%- set id = params.id if params.id else params.name -%}
 
 {%- set afterInputHtml %}
-{% if params.button != "" and params.button is not none and params.button is not false %}
+{% if params.button not in ["", none, false] %}
 {{ button({
   "html": params.button.html,
   "text": params.button.text,

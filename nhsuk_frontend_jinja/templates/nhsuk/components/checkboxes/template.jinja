@@ -34,16 +34,7 @@
 
 {#- a record of other elements that we need to associate with the input using
   aria-describedby – for example hints or error messages -#}
-{% set ns = namespace() %}
-{% set ns.describedBy = params.describedBy if params.describedBy else "" %}
-{% if params.fieldset.describedBy %}
-  {% set ns.describedBy = params.fieldset.describedBy %}
-{% endif %}
-
-{#- Jinja compatibility - avoid referencing params.items/params.values directly
-  as it clashes with dict.items() and dict.values() -#}
-{% set items = params.get("items", []) if params else [] %}
-{% set values = params.get("values", []) if params else [] %}
+{% set ns = namespace(describedBy=params.fieldset.describedBy if params.fieldset.describedBy else (params.describedBy if params.describedBy else "")) %}
 
 {#- fieldset is false by default -#}
 {% set hasFieldset = true if params.fieldset else false %}
@@ -55,20 +46,26 @@
   {% set itemName = item.name if item.name else params.name %}
   {% set conditionalId = "conditional-" ~ itemId %}
   {%- if item.divider %}
-    <div class="nhsuk-checkboxes__divider">{{ item.divider }}</div>
+    <div class="nhsuk-checkboxes__divider {{- " nhsuk-u-frontend-not-supported-hidden" if item.behaviour == "inclusive" else "" }}">
+      {{- item.divider -}}
+    </div>
   {% else %}
-    {% set isChecked = item.checked | default((item.value in values and item.checked != false) if values else false, true) %}
+    {% set isChecked = item.checked | default((item.value in (params.get("values", []) if params else []) and item.checked != false) if (params.get("values", []) if params else []) else false, true) %}
     {% set hasHint = true if item.hint.text or item.hint.html %}
     {% set itemHintId = item.hint.id | default(itemId ~ "-item-hint") if hasHint else "" %}
     {% set itemDescribedBy = ns.describedBy if not hasFieldset else "" %}
     {% set itemDescribedBy = (itemDescribedBy ~ " " ~ itemHintId) | trim %}
     {% set itemClasses = "nhsuk-checkboxes__input" ~ (" " ~ item.classes if item.classes) %}
-    <div class="nhsuk-checkboxes__item">
+    {#- The item.exclusive option is deprecated, to be removed in v11.0 -#}
+    {% set itemBehaviour = "exclusive" if item.exclusive else item.behaviour %}
+    {#- The item.exclusiveGroup option is deprecated, to be removed in v11.0 -#}
+    {% set itemBehaviourGroup = item.exclusiveGroup | default(item.behaviourGroup) %}
+    <div class="nhsuk-checkboxes__item {{- " nhsuk-u-frontend-not-supported-hidden" if item.behaviour == "inclusive" else "" }}">
       <input class="{{ itemClasses }}" id="{{ itemId }}" name="{{ itemName }}" type="checkbox" value="{{ item.value }}"
         {{- " checked" if isChecked }}
         {{- " disabled" if item.disabled or (item.disabled != false and params.disabled) }}
-        {%- if item.exclusive %} data-checkbox-exclusive{% endif -%}
-        {%- if item.exclusiveGroup %} data-checkbox-exclusive-group="{{ item.exclusiveGroup }}"{% endif -%}
+        {%- if itemBehaviour %} data-behaviour="{{ itemBehaviour }}"{% endif -%}
+        {%- if itemBehaviourGroup %} data-behaviour-group="{{ itemBehaviourGroup }}"{% endif -%}
         {%- if item.conditional.html %} data-aria-controls="{{ conditionalId }}"{% endif -%}
         {%- if itemDescribedBy %} aria-describedby="{{ itemDescribedBy }}"{% endif -%}
         {{- nhsukAttributes(item.attributes) }}>
@@ -137,7 +134,7 @@
     {% if params.formGroup.beforeInputs %}
     {{ params.formGroup.beforeInputs.html | safe | trim | indent(4) if params.formGroup.beforeInputs.html else params.formGroup.beforeInputs.text }}
     {% endif %}
-    {% for item in items %}
+    {% for item in (params.get("items", []) if params else []) %}
       {% if item %}
         {{- _checkboxItem(params, item, loop.index) -}}
       {% endif %}

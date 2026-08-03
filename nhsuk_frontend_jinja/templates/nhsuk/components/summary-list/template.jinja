@@ -5,9 +5,9 @@
 {#- Set classes for this component #}
 {%- set classNames = "nhsuk-summary-list" -%}
 
-{%- if params.border is sameas false and not (params.classes and "nhsuk-summary-list--no-border" in params.classes) %}
+{%- if params.border is false and not (params.classes and "nhsuk-summary-list--no-border" in params.classes) %}
   {% set classNames = classNames ~ " nhsuk-summary-list--no-border" %}
-{% elif params.lastRowBorder is sameas false and not (params.classes and "nhsuk-summary-list--no-last-row-border" in params.classes) %}
+{% elif params.lastRowBorder is false and not (params.classes and "nhsuk-summary-list--no-last-row-border" in params.classes) %}
   {% set classNames = classNames ~ " nhsuk-summary-list--no-last-row-border" %}
 {% endif %}
 
@@ -18,17 +18,14 @@
 {%- set rows = params.rows | select("mapping") | list if params.rows | length else [] %}
 
 {#- Determine if we need 2 or 3 columns #}
-{%- set state = namespace(hasActions=false) %}
+{%- set ns = namespace(hasActions=false) %}
 {% for row in rows %}
-  {% if row.actions
-    and row.actions["items"] is defined
-    and row.actions["items"] | length
-  %}
-    {% set state.hasActions = true %}
-  {% endif %}
+  {% set row_actions_obj = row.get("actions") %}
+  {% set row_actions = row_actions_obj.get("items", []) if row_actions_obj is mapping else [] %}
+  {% set ns.hasActions = true if row_actions | length else ns.hasActions %}
 {% endfor -%}
 
-{%- set summaryList %}
+{%- set summaryListHtml %}
 <dl class="{{ classNames }}" {%- if params.id %} id="{{ params.id }}"{% endif %} {{- nhsukAttributes(params.attributes) }}>
 {% if caller %}
   {{- caller() }}
@@ -41,17 +38,17 @@
       "loop": loop,
       "rows": rows,
       "classNames": classNames,
-      "hasActions": state.hasActions
+      "hasActions": ns.hasActions
     }) | trim | indent(2, true) }}
   {% endfor %}
 {% endif %}
 </dl>
 {%- endset %}
 
-{%- if params.card -%}
-  {% call card(params.card) -%}
-    {{ summaryList | safe | trim | indent(4) }}
+{%- if params.card %}
+  {%- call card(params.card) %}
+    {{ summaryListHtml | safe | trim | indent(4) }}
   {%- endcall %}
-{%- else -%}
-  {{ summaryList | safe | trim }}
+{% else %}
+  {{- summaryListHtml | safe | trim }}
 {% endif %}

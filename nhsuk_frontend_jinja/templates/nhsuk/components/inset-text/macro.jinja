@@ -1,4 +1,4 @@
-{% macro insetText(params) %}
+{% macro insetText(params, caller=None) %}
   {%- if caller -%}
   {# noop for Jinja support #}
   {%- endif -%}

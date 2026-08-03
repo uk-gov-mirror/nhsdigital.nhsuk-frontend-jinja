@@ -1,17 +1,26 @@
 {% from "nhsuk/components/card/macro.jinja" import card -%}
 
-{{ card({
+{%- set options = {
   "id": params.id,
   "heading": params.heading,
   "headingClasses": params.headingClasses,
-  "headingLevel": params.headingLevel if params.headingLevel else 3,
+  "headingLevel": params.headingLevel | default(3),
   "headingVisuallyHiddenText": params.visuallyHiddenText | default("Important", true)
     if params.heading and not ("Important" in params.heading or "important" in params.heading)
-    else undefined,
+    else none,
   "description": params.text,
-  "descriptionHtml": caller() if caller else params.html,
+  "descriptionHtml": params.html,
   "actions": params.actions,
   "classes": params.classes,
   "attributes": params.attributes,
   "variant": "warning"
-}) | trim }}
+} -%}
+
+{% if caller %}
+  {% set outerCaller = caller %}
+  {%- call card(options) %}
+    {{- outerCaller() }}
+  {%- endcall %}
+{% else %}
+  {{- card(options) | trim }}
+{% endif %}

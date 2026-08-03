@@ -79,7 +79,7 @@
       "name": params.name,
       "type": params.type | default("text", true),
       "spellcheck": {
-        "value": params.spellcheck | lower
+        "value": params.spellcheck | string | lower
           if params.spellcheck in [true, false]
           else false,
         "optional": true

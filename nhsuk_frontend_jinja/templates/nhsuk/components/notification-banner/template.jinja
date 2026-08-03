@@ -1,3 +1,4 @@
+{% from "nhsuk/components/heading/macro.jinja" import heading %}
 {% from "nhsuk/macros/attributes.jinja" import nhsukAttributes %}
 
 {#- Set variant or (deprecated) type for this component #}
@@ -43,7 +44,7 @@
     },
     "data-module": "nhsuk-notification-banner",
     "data-disable-auto-focus": {
-      "value": params.disableAutoFocus | lower
+      "value": params.disableAutoFocus | string | lower
         if params.disableAutoFocus in [true, false]
         else false,
       "optional": true
@@ -54,13 +55,18 @@
 
   {{- nhsukAttributes(params.attributes) -}}>
   <div class="nhsuk-notification-banner__header">
-    <h{{ params.titleHeadingLevel | default(2, true) }} class="nhsuk-notification-banner__title" id="{{ params.titleId | default("nhsuk-notification-banner-title", true) }}">
-      {{ title }}
-    </h{{ params.titleHeadingLevel | default(2, true) }}>
+    {{ heading({
+      "text": title,
+      "id": params.titleId | default("nhsuk-notification-banner-title", true),
+      "level": params.titleHeadingLevel | default(2),
+      "className": "nhsuk-notification-banner__title"
+    }) | trim | indent(4) }}
   </div>
   <div class="nhsuk-notification-banner__content">
-  {% if caller or params.html %}
-    {{ caller() if caller else params.html | safe | trim | indent(4) }}
+  {% if caller %}
+    {{- caller() }}
+  {% elif params.html %}
+    {{ params.html | safe | trim | indent(4) }}
   {% elif params.text %}
     {# Set default style for single line content -#}
     <p class="nhsuk-notification-banner__heading">

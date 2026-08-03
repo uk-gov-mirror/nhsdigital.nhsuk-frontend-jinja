@@ -1,5 +1,5 @@
-{% macro card(params) %}
-{%- if caller -%}
+{% macro card(params, caller=None) %}
+  {%- if caller -%}
   {# noop for Jinja support #}
   {%- endif -%}
   {%- include "nhsuk/components/card/template.jinja" -%}

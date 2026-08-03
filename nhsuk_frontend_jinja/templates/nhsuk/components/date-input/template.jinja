@@ -20,41 +20,35 @@
   {% set classNamesFormGroup = classNamesFormGroup ~ " " ~ params.formGroup.classes %}
 {% endif %}
 
-{#- Jinja compatibility - avoid referencing params.items/params.values directly
-  as it clashes with dict.items() and dict.values() -#}
-{% set items = params.get("items", []) if params else [] %}
-{% set values = params.get("values", {}) if params else {} %}
-
 {#- a record of other elements that we need to associate with the input using
   aria-describedby – for example hints or error messages -#}
-{% set ns = namespace() %}
-{% set ns.describedBy = params.fieldset.describedBy if params.fieldset.describedBy else "" %}
+{% set ns = namespace(describedBy=params.fieldset.describedBy if params.fieldset.describedBy else "") %}
 
 {#- fieldset is false by default -#}
 {% set hasFieldset = true if params.fieldset else false %}
 
 {%- set dateInputDay = params.day | default({
   "name": "day",
-  "value": values.day,
+  "value": (params.get("values", []) if params else []).day,
   "width": 2
 }) -%}
 
 {%- set dateInputMonth = params.month | default({
   "name": "month",
-  "value": values.month,
+  "value": (params.get("values", []) if params else []).month,
   "width": 2
 }) -%}
 
 {%- set dateInputYear = params.year | default({
   "name": "year",
-  "value": values.year,
+  "value": (params.get("values", []) if params else []).year,
   "width": 4
 }) -%}
 
-{%- if items | length %}
-  {% set ns.dateInputItems = items %}
+{%- if (params.get("items", []) if params else []) | length %}
+  {% set dateInputItems = (params.get("items", []) if params else []) %}
 {% else %}
-  {% set ns.dateInputItems = [
+  {% set dateInputItems = [
     dateInputDay,
     dateInputMonth,
     dateInputYear
@@ -63,8 +57,8 @@
 
 {%- macro _dateInputItem(params, item, anyItemHasError) %}
 {% set itemLabel = item.label if item.label is mapping and item.label is not escaped else {
-  "text": item.label if item.label is string else undefined,
-  "html": item.label if item.label is escaped else undefined
+  "text": item.label if item.label is string else none,
+  "html": item.label if item.label is escaped else none
 } %}
 {% set itemName = item.name %}
 {% set itemValue = item.value %}
@@ -92,7 +86,7 @@
   {{ input({
     "label": {
       "html": itemLabel.html,
-      "text": itemLabel.text | default(itemName | capitalize),
+      "text": itemLabel.text | default(itemName | capitalize, true),
       "id": itemLabel.id,
       "for": itemLabel.for,
       "classes": "nhsuk-date-input__label" ~ (" " ~ itemLabel.classes if itemLabel.classes),
@@ -101,7 +95,7 @@
     "errorMessage": itemHasError or (item.error != false and params.errorMessage and not anyItemHasError),
     "id": item.id if item.id else (params.id ~ "-" ~ itemName),
     "name": (params.namePrefix ~ "[" ~ itemName ~ "]") if params.namePrefix else itemName,
-    "value": itemValue | default(values[itemName]),
+    "value": itemValue | default((params.get("values", []) if params else [])[itemName]),
     "type": item.type | default("text", true),
     "prefix": item.prefix,
     "suffix": item.suffix,
@@ -120,9 +114,9 @@
 {%- endmacro -%}
 
 {#- Determine if any date input item has an error #}
-{%- set ns.anyItemHasError = false %}
-{% for item in ns.dateInputItems %}
-  {% set ns.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else ns.anyItemHasError %}
+{%- set ns_err = namespace(anyItemHasError=false) %}
+{% for item in dateInputItems %}
+  {% set ns_err.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else ns_err.anyItemHasError %}
 {% endfor -%}
 
 {#- Capture the HTML so we can optionally nest it in a fieldset -#}
@@ -154,9 +148,9 @@
     {% if params.formGroup.beforeInputs %}
     {{ params.formGroup.beforeInputs.html | safe | trim | indent(4) if params.formGroup.beforeInputs.html else params.formGroup.beforeInputs.text }}
     {% endif %}
-    {% for item in ns.dateInputItems %}
+    {% for item in dateInputItems %}
       {% if item %}
-        {{- _dateInputItem(params, item, ns.anyItemHasError) | trim | indent(4, true) }}
+        {{- _dateInputItem(params, item, ns_err.anyItemHasError) | trim | indent(4, true) }}
       {% endif %}
     {% endfor %}
     {% if params.formGroup.afterInputs %}
