@@ -1,6 +1,8 @@
 {% from "nhsuk/macros/attributes.jinja" import nhsukAttributes %}
 {% from "nhsuk/macros/i18n.jinja" import nhsukI18nAttributes %}
 {% from "nhsuk/components/card/macro.jinja" import card %}
+{% from "nhsuk/components/heading/macro.jinja" import heading %}
+{% from "nhsuk/components/scroll/macro.jinja" import scroll %}
 {% from "nhsuk/macros/icon.jinja" import nhsukIcon %}
 
 {#- Set variant for this component #}
@@ -27,6 +29,12 @@
   {% set classNames = classNames ~ " nhsuk-table--responsive" %}
 {% endif %}
 
+{%- if params.border is false and not (params.classes and "nhsuk-table--no-border" in params.classes) %}
+  {% set classNames = classNames ~ " nhsuk-table--no-border" %}
+{% elif params.lastRowBorder is false and not (params.classes and "nhsuk-table--no-last-row-border" in params.classes) %}
+  {% set classNames = classNames ~ " nhsuk-table--no-last-row-border" %}
+{% endif %}
+
 {%- set head = params.head | select("mapping") | list if params.head | length else [] %}
 {%- set rows = params.rows | select("iterable") | list if params.rows | length else [] %}
 
@@ -46,28 +54,12 @@
   {% set classNames = classNames ~ " nhsuk-table--striped" %}
 {% endif %}
 
-{%- if params.captionSize and
-  params.captionSize in ["s", "m", "l", "xl"] and (
-    not params.captionClasses or (
-      not "nhsuk-table__caption--s" in params.captionClasses and
-      not "nhsuk-table__caption--m" in params.captionClasses and
-      not "nhsuk-table__caption--l" in params.captionClasses and
-      not "nhsuk-table__caption--xl" in params.captionClasses
-    )
-  )
-%}
-  {% set classNamesCaption = classNamesCaption ~ " nhsuk-table__caption--" ~ params.captionSize %}
-{% endif %}
-
 {%- if params.classes or params.tableClasses %}
   {% set classNames = classNames ~ " " ~ (params.classes or params.tableClasses) %}
 {% endif %}
 
-{%- if params.captionClasses %}
-  {% set classNamesCaption = classNamesCaption ~ " " ~ params.captionClasses %}
-{% endif %}
-
-{%- set captionDescriptionText = params.captionDescriptionText | default("Column headers are sortable") %}
+{%- set captionId = params.captionId | default(params.id ~ "-caption" if params.scroll and params.id else none) | default(("table-" ~ params.caption | replace(" ", "-") | lower | truncate(40, true, "") ~ "-caption") if params.scroll and params.caption else none) -%}
+{%- set captionDescriptionText = params.captionDescriptionText | default("Column headers are sortable" if "nhsuk-table--sortable" in classNames else none) %}
 
 {%- set attributesHtml %}
   {{- nhsukAttributes({
@@ -215,13 +207,17 @@
 {%- set tableHtml -%}
 <table {{- attributesHtml | safe }}>
 {% if params.caption %}
-  <caption class="{{ classNamesCaption }}">
-  {% if "nhsuk-table--sortable" in classNames %}
-    {{ params.caption }}<span class="nhsuk-u-visually-hidden"> ({{ captionDescriptionText }})</span>
-  {% else %}
-    {{ params.caption }}
-  {% endif %}
-  </caption>
+  {{ heading({
+    "text": params.caption,
+    "visuallyHiddenText": "(" ~ captionDescriptionText ~ ")" if captionDescriptionText else none,
+    "id": captionId,
+    "size": params.captionSize,
+    "sizes": ["s", "m", "l", "xl"],
+    "className": classNamesCaption,
+    "classPrefix": classNamesCaption ~ "--",
+    "classes": params.captionClasses,
+    "element": "caption"
+  }) | trim | indent(2) }}
 {% endif %}
 {% if head | length %}
   <thead class="nhsuk-table__head" {%- if params.responsive %} role="rowgroup"{% endif %}>
@@ -307,6 +303,14 @@
   </tbody>
 </table>
 {%- endset %}
+
+{%- if params.scroll %}
+  {% set tableHtml = scroll({
+    "html": tableHtml,
+    "labelledBy": captionId,
+    "variant": variant
+  }) | trim %}
+{% endif %}
 
 {%- if params.card or params.panel %}
   {%- call card(params.card or {

@@ -83,9 +83,9 @@ def standard_template_replacements(filepath):
             # This regex doesn't detect all instances of this problem, but it sorts out
             # most of them.
             if match := UNQUOTED_KEY.match(line):
-                line = UNQUOTED_KEY.sub(
-                    f'{match.group('leading_space')}"{match.group('name')}": ', line
-                )
+                leading = match.group("leading_space")
+                name = match.group("name")
+                line = UNQUOTED_KEY.sub(f'{leading}"{name}": ', line)
 
             line = INLINE_UNQUOTED_KEY.sub(r'\g<prefix>"\g<name>":', line)
 
@@ -126,6 +126,7 @@ def standard_template_replacements(filepath):
             line = line.replace("=== false", "is false")
             line = line.replace("=== true", "is true")
             line = line.replace('[""\, null, false]', '[""\, none, false]')
+            line = line.replace('["", null, false]', '["", none, false]')
 
             # Use none instead of undefined.
             line = line.replace(" else undefined", " else none")
