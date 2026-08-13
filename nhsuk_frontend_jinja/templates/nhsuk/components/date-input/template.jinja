@@ -1,4 +1,4 @@
-{% from "nhsuk/components/error-message/macro.jinja" import errorMessage -%}
+{% from "nhsuk/components/error-message/macro.jinja" import errorMessage %}
 {% from "nhsuk/components/fieldset/macro.jinja" import fieldset %}
 {% from "nhsuk/components/hint/macro.jinja" import hint %}
 {% from "nhsuk/components/input/macro.jinja" import input %}
@@ -8,16 +8,20 @@
 {%- set classNames = "nhsuk-date-input" -%}
 {%- set classNamesFormGroup = "nhsuk-form-group" -%}
 
-{%- if params.errorMessage %}
-  {% set classNamesFormGroup = classNamesFormGroup ~ " nhsuk-form-group--error" %}
-{% endif %}
+{#- Support hint as string #}
+{%- set hintOptions = params.hint if params.hint is mapping and params.hint is not escaped else {
+  "text": params.hint if params.hint is string else none,
+  "html": params.hint if params.hint is escaped else none
+} -%}
+
+{#- Support error message as string #}
+{%- set errorMessageOptions = params.errorMessage if params.errorMessage is mapping and params.errorMessage is not escaped else {
+  "text": params.errorMessage if params.errorMessage is string else none,
+  "html": params.errorMessage if params.errorMessage is escaped else none
+} -%}
 
 {%- if params.classes %}
   {% set classNames = classNames ~ " " ~ params.classes %}
-{% endif %}
-
-{%- if params.formGroup.classes %}
-  {% set classNamesFormGroup = classNamesFormGroup ~ " " ~ params.formGroup.classes %}
 {% endif %}
 
 {#- a record of other elements that we need to associate with the input using
@@ -58,10 +62,12 @@
 {% endif %}
 
 {%- macro _dateInputItem(params, item, anyItemHasError) %}
-{% set itemLabel = item.label if item.label is mapping and item.label is not escaped else {
+{#- Support item label as string #}
+{%- set itemLabel = item.label if item.label is mapping and item.label is not escaped else {
   "text": item.label if item.label is string else none,
   "html": item.label if item.label is escaped else none
-} %}
+} -%}
+
 {% set itemName = item.name %}
 {% set itemValue = item.value %}
 {% set itemWidth = item.width | default(2) %}
@@ -94,7 +100,8 @@
       "classes": "nhsuk-date-input__label" ~ (" " ~ itemLabel.classes if itemLabel.classes),
       "attributes": itemLabel.attributes
     },
-    "errorMessage": itemHasError or (item.error != false and params.errorMessage and not anyItemHasError),
+    "errorMessage": (not item.classes or not "nhsuk-input--error" in itemClasses) and
+      (itemHasError or (item.error != false and (errorMessageOptions.text or errorMessageOptions.html or params.errorMessage == true) and not anyItemHasError)),
     "id": item.id if item.id else (params.id ~ "-" ~ itemName),
     "name": (params.namePrefix ~ "[" ~ itemName ~ "]") if params.namePrefix else itemName,
     "value": itemValue | default((params.get("values", []) if params else [])[itemName]),
@@ -123,27 +130,27 @@
 
 {#- Capture the HTML so we can optionally nest it in a fieldset -#}
 {% set innerHtml %}
-{% if params.hint %}
-  {% set hintId = params.hint.id | default(params.id ~ "-hint") %}
+{% if hintOptions.text or hintOptions.html %}
+  {% set hintId = hintOptions.id | default(params.id ~ "-hint") %}
   {% set ns.describedBy = (ns.describedBy ~ " " ~ hintId) | trim %}
   {{ hint({
-    "html": params.hint.html,
-    "text": params.hint.text,
-    "id": params.hint.id | default(hintId),
-    "classes": params.hint.classes,
-    "attributes": params.hint.attributes
+    "html": hintOptions.html,
+    "text": hintOptions.text,
+    "id": hintOptions.id | default(hintId),
+    "classes": hintOptions.classes,
+    "attributes": hintOptions.attributes
   }) | trim | indent(2) }}
 {% endif %}
-{% if params.errorMessage.text or params.errorMessage.html %}
-  {% set errorId = params.errorMessage.id | default(params.id ~ "-error") %}
+{% if errorMessageOptions.text or errorMessageOptions.html %}
+  {% set errorId = errorMessageOptions.id | default(params.id ~ "-error") %}
   {% set ns.describedBy = (ns.describedBy ~ " " ~ errorId) | trim %}
   {{ errorMessage({
-    "html": params.errorMessage.html,
-    "text": params.errorMessage.text,
-    "visuallyHiddenText": params.errorMessage.visuallyHiddenText,
-    "id": params.errorMessage.id | default(errorId),
-    "classes": params.errorMessage.classes,
-    "attributes": params.errorMessage.attributes
+    "html": errorMessageOptions.html,
+    "text": errorMessageOptions.text,
+    "visuallyHiddenText": errorMessageOptions.visuallyHiddenText,
+    "id": errorMessageOptions.id | default(errorId),
+    "classes": errorMessageOptions.classes,
+    "attributes": errorMessageOptions.attributes
   }) | trim | indent(2) }}
 {% endif %}
   <div class="{{ classNames }}" {%- if params.id %} id="{{ params.id }}"{% endif %} {{- nhsukAttributes(params.attributes) -}}>
@@ -160,6 +167,14 @@
     {% endif %}
   </div>
 {% endset -%}
+
+{%- if errorMessageOptions.text or errorMessageOptions.html or params.errorMessage == true or nsErr.anyItemHasError %}
+  {% set classNamesFormGroup = classNamesFormGroup ~ " nhsuk-form-group--error" %}
+{% endif %}
+
+{%- if params.formGroup.classes %}
+  {% set classNamesFormGroup = classNamesFormGroup ~ " " ~ params.formGroup.classes %}
+{% endif -%}
 
 <div class="{{ classNamesFormGroup }}" {{- nhsukAttributes(params.formGroup.attributes) }}>
 {% if hasFieldset %}

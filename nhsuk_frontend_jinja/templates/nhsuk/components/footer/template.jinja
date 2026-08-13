@@ -1,4 +1,5 @@
-{% from "nhsuk/macros/attributes.jinja" import nhsukAttributes -%}
+{% from "nhsuk/components/heading/macro.jinja" import heading %}
+{% from "nhsuk/macros/attributes.jinja" import nhsukAttributes %}
 
 {#- Set classes for this component #}
 {%- set classNames = "nhsuk-footer" -%}
@@ -43,8 +44,21 @@
     <div class="nhsuk-footer__navigation nhsuk-grid-row">
     {% for navigation in row %}
       <div class="nhsuk-grid-column-{{ navigation.width | default(width, true) }}">
-      {% if navigation.title %}
-        <h2 class="nhsuk-footer__heading nhsuk-heading-s">{{ navigation.title }}</h2>
+      {% if navigation.heading or navigation.title %}
+        {{ heading({
+          "id": navigation.heading.id,
+          "text": navigation.heading.text | default(navigation.title),
+          "html": navigation.heading.html,
+          "visuallyHiddenText": navigation.heading.visuallyHiddenText,
+          "caption": navigation.heading.caption,
+          "href": navigation.heading.href,
+          "level": 2,
+          "size": "s",
+          "className": "nhsuk-footer__heading",
+          "classPrefix": "nhsuk-heading-",
+          "classes": navigation.heading.classes,
+          "attributes": navigation.heading.attributes
+        }) | trim | indent(8) }}
       {% endif %}
       {% if navigation.html %}
         {{ navigation.html | safe | trim | indent(8) }}
@@ -62,7 +76,9 @@
     <div class="nhsuk-footer__meta">
 {% if params.meta %}
     {% if params.meta.get("items", []) %}
-      <h2 class="nhsuk-u-visually-hidden">{{ params.meta.visuallyHiddenTitle | default("Support links") }}</h2>
+      <h2 class="nhsuk-u-visually-hidden">
+        {{- params.meta.visuallyHiddenText | default(params.meta.visuallyHiddenTitle) | default("Support links") -}}
+      </h2>
       {{ _footerList(params.meta.get("items", [])) | trim | indent(6) }}
     {% endif %}
     {% if caller %}

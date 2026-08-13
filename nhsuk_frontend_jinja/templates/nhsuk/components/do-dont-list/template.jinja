@@ -1,6 +1,13 @@
 {% from "nhsuk/components/card/macro.jinja" import card %}
 {% from "nhsuk/macros/icon.jinja" import nhsukIcon %}
 
+{#- Support heading as string (with deprecated options) #}
+{%- set headingOptions = params.heading if params.heading is mapping and params.heading is not escaped else {
+  "text": params.heading if params.heading is string else params.title,
+  "html": params.heading if params.heading is escaped else none,
+  "level": params.headingLevel
+} -%}
+
 {#- Set icon or (deprecated) type for this component #}
 {%- set icon = "cross" if (params.icon or params.type) == "cross" else "tick" %}
 {#- Jinja compatibility - avoid referencing params.items directly
@@ -36,9 +43,18 @@
 
 {{ card({
   "id": params.id,
-  "heading": params.title,
-  "headingLevel": params.headingLevel | default(3),
-  "descriptionHtml": listHtml,
+  "heading": {
+    "id": headingOptions.id,
+    "text": headingOptions.text,
+    "html": headingOptions.html,
+    "visuallyHiddenText": headingOptions.visuallyHiddenText,
+    "level": headingOptions.level | default(3),
+    "classes": headingOptions.classes,
+    "attributes": headingOptions.attributes
+  },
+  "description": {
+    "html": listHtml
+  },
   "classes": params.classes,
   "attributes": params.attributes,
   "variant": "feature"
