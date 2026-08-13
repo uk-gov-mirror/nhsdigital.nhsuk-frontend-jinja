@@ -1,5 +1,137 @@
 # NHS.UK frontend jinja changelog
 
+## 0.10.0
+
+This version is compatible with v10.6.0 of nhsuk-frontend.
+
+### :new: **New features**
+
+#### Sortable and scrolling tables
+
+The table component now supports sortable columns and scrolling containers.
+
+- Use `sort: "ascending"` or `sort: "descending"` on the currently sorted column.
+- Use `sort: true` on sortable columns that are not currently sorted.
+- Use `scroll: true` for wide tables that need horizontal scrolling.
+
+This was added in [pull request #1654: Add option to make tables sortable](https://github.com/nhsuk/nhsuk-frontend/pull/1654) and [pull request #1969: Add option to make tables scroll](https://github.com/nhsuk/nhsuk-frontend/pull/1969).
+
+#### Expanded table options
+
+The table component now supports:
+
+- `compact: true` for reduced cell padding
+- `striped: true` for alternating row backgrounds
+- `border: false` and `lastRowBorder: false` for border control
+- Cell-level `align`, `width`, `href` and `visuallyHiddenText`
+
+This was added in [pull request #1998: Add compact option for tables](https://github.com/nhsuk/nhsuk-frontend/pull/1998), [pull request #2003: Add striped option for tables](https://github.com/nhsuk/nhsuk-frontend/pull/2003), and [pull request #2025: Align table component options with summary list](https://github.com/nhsuk/nhsuk-frontend/pull/2025).
+
+#### Expanded summary list options
+
+Summary lists now support `width`, `id`, and `attributes` on rows and on nested `key`, `value`, and `actions` objects.
+
+This was added in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Checkbox inclusive option (select all)
+
+Checkbox items now support `behaviour: "inclusive"` to provide a select-all style option in supported browsers.
+
+This was added in [pull request #1707: Add checkbox "all" option](https://github.com/nhsuk/nhsuk-frontend/pull/1707).
+
+#### Card and summary list actions as buttons
+
+Card and summary list action items now support button-style options in addition to link-style options:
+
+- `item.id`
+- `item.type`
+- `item.name`
+- `item.value`
+
+This was added in [pull request #1989: Add support for card and summary list actions as buttons](https://github.com/nhsuk/nhsuk-frontend/pull/1989).
+
+#### Simpler form option values across components
+
+Form components now support string values where nested objects were previously required for labels, legends, hints and error messages.
+
+This was added in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Additional caller/html consistency updates
+
+Macro behavior was aligned for `caller` and `html` usage in:
+
+- action link
+- back link
+- breadcrumb (`item.html`)
+- error message
+- hint
+- image
+- skip link
+- tag
+
+This was added in [pull request #1999: Add missing caller support and fixture coverage to components](https://github.com/nhsuk/nhsuk-frontend/pull/1999).
+
+### :wastebasket: **Deprecated features**
+
+#### Checkbox "none" option naming
+
+Checkbox option naming has changed:
+
+- `exclusive` -> `behaviour: "exclusive"`
+- `exclusiveGroup` -> `behaviourGroup`
+
+The previous names are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #1707: Add checkbox "all" option](https://github.com/nhsuk/nhsuk-frontend/pull/1707).
+
+#### Card heading and description option naming
+
+Card options now use nested `heading` and `description` objects (`text`, `html`, and related nested fields) instead of older top-level names such as `headingHtml`, `headingLevel`, `descriptionHtml`, and similar.
+
+The previous names are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Details summary option naming
+
+Details summary options now use `summary.text` / `summary.html` instead of `summaryText` / `summaryHtml`.
+
+The previous names are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Error summary, panel, notification banner and table caption option naming
+
+These components now use nested option objects for headings/titles/descriptions/captions, replacing older top-level names.
+
+The previous names are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### ARIA label and visually hidden text option naming
+
+Several options were renamed for consistency, including breadcrumb, contents list, footer meta text, header search options, pagination labels, password input aria labels, and tabs hidden title text.
+
+The previous names are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Action link, back link and button element option
+
+The `element` option on action links, back links and buttons is deprecated. Element choice is moving to inferred behavior (`href` => anchor, no `href` => button).
+
+The previous pattern is deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #2047: Review options for headings and ARIA labels](https://github.com/nhsuk/nhsuk-frontend/pull/2047).
+
+#### Responsive/reverse table class and option alignment
+
+Table responsive/reverse class naming and related options were aligned with newer table patterns.
+
+The previous names and patterns are deprecated and will be removed in a future release.
+
+This change was introduced in [pull request #1998: Add compact option for tables](https://github.com/nhsuk/nhsuk-frontend/pull/1998) and [pull request #2003: Add striped option for tables](https://github.com/nhsuk/nhsuk-frontend/pull/2003).
+
 ## 0.9.1
 
 This version is compatible with v10.5.2 of nhsuk-frontend.
