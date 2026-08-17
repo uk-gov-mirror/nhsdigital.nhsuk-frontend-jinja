@@ -8,19 +8,19 @@
 {%- set classNamesFormGroup = "nhsuk-form-group" -%}
 
 {#- Support label as string #}
-{%- set labelOptions = params.label if params.label is mapping and params.label is not escaped else {
+{%- set labelOptions = params.label if params.label is mapping else {
   "text": params.label if params.label is string else none,
   "html": params.label if params.label is escaped else none
 } -%}
 
 {#- Support hint as string #}
-{%- set hintOptions = params.hint if params.hint is mapping and params.hint is not escaped else {
+{%- set hintOptions = params.hint if params.hint is mapping else {
   "text": params.hint if params.hint is string else none,
   "html": params.hint if params.hint is escaped else none
 } -%}
 
 {#- Support error message as string #}
-{%- set errorMessageOptions = params.errorMessage if params.errorMessage is mapping and params.errorMessage is not escaped else {
+{%- set errorMessageOptions = params.errorMessage if params.errorMessage is mapping else {
   "text": params.errorMessage if params.errorMessage is string else none,
   "html": params.errorMessage if params.errorMessage is escaped else none
 } -%}
