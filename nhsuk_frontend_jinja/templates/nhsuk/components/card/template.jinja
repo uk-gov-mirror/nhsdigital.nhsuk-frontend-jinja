@@ -80,8 +80,7 @@
   {% set classNames = classNames ~ " " ~ params.classes %}
 {% endif %}
 
-{%- set actionsObj = params.actions if params.actions is mapping else {} -%}
-{%- set actions = actionsObj.get("items", []) | select("mapping") | list if actionsObj.get("items", []) | length else [] %}
+{%- set actions = params.actions.get("items", []) | select("mapping") | list if params.actions and params.actions.get("items", []) | length else [] %}
 
 {%- set image = {
   "src": params.imgURL,
@@ -176,13 +175,13 @@
     }, classNamesHeading) | trim | indent(4) }}
   {% endif %}
     {% if actions | length == 1 %}
-    <div class="nhsuk-card__actions {%- if actionsObj.classes %} {{ actionsObj.classes }}{% endif %}">
+    <div class="nhsuk-card__actions {%- if params.actions.classes %} {{ params.actions.classes }}{% endif %}">
       {{ cardAction(actions[0], {
         "params": params
       }) | trim | indent(6) }}
     </div>
     {% elif actions | length %}
-    <ul class="nhsuk-card__actions {%- if actionsObj.classes %} {{ actionsObj.classes }}{% endif %}">
+    <ul class="nhsuk-card__actions {%- if params.actions.classes %} {{ params.actions.classes }}{% endif %}">
       {% for action in actions %}
       <li class="nhsuk-card__action">
         {{ cardAction(action, {
