@@ -120,8 +120,6 @@ def standard_template_replacements(filepath):
                 "params.spellcheck | string | lower",
             )
 
-            line = line.replace("{ other:", '{ "other":')
-
             # Jinja doesn't support `===`, use `is` instead.
             line = line.replace("=== false", "is false")
             line = line.replace("=== true", "is true")
