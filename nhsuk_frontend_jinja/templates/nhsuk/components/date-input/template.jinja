@@ -123,9 +123,9 @@
 {%- endmacro -%}
 
 {#- Determine if any date input item has an error #}
-{%- set nsErr = namespace(anyItemHasError=false) %}
+{%- set ns.anyItemHasError = false %}
 {% for item in dateInputItems %}
-  {% set nsErr.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else nsErr.anyItemHasError %}
+  {% set ns.anyItemHasError = true if item.error or (item.classes and "nhsuk-input--error" in item.classes) else ns.anyItemHasError %}
 {% endfor -%}
 
 {#- Capture the HTML so we can optionally nest it in a fieldset -#}
@@ -159,7 +159,7 @@
     {% endif %}
     {% for item in dateInputItems %}
       {% if item %}
-        {{- _dateInputItem(params, item, nsErr.anyItemHasError) | trim | indent(4, true) }}
+        {{- _dateInputItem(params, item, ns.anyItemHasError) | trim | indent(4, true) }}
       {% endif %}
     {% endfor %}
     {% if params.formGroup.afterInputs %}
@@ -168,7 +168,7 @@
   </div>
 {% endset -%}
 
-{%- if errorMessageOptions.text or errorMessageOptions.html or params.errorMessage == true or nsErr.anyItemHasError %}
+{%- if errorMessageOptions.text or errorMessageOptions.html or params.errorMessage == true or ns.anyItemHasError %}
   {% set classNamesFormGroup = classNamesFormGroup ~ " nhsuk-form-group--error" %}
 {% endif %}
 
