@@ -123,7 +123,6 @@ def standard_template_replacements(filepath):
             # Jinja doesn't support `===`, use `is` instead.
             line = line.replace("=== false", "is false")
             line = line.replace("=== true", "is true")
-            line = line.replace('[""\, null, false]', '[""\, none, false]')
             line = line.replace('["", null, false]', '["", none, false]')
 
             # Use none instead of undefined.
