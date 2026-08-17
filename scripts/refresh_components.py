@@ -46,14 +46,6 @@ def standard_macro_replacements(
                 "./template.jinja", f"nhsuk/components/{component_name}/template.jinja"
             )
 
-            if (
-                accepts_caller
-                and line.lstrip().startswith("{% macro ")
-                and "(params)" in line
-                and "caller" not in line
-            ):
-                line = line.replace("(params)", "(params, caller=None)")
-
             file.write(line)
 
             if (
