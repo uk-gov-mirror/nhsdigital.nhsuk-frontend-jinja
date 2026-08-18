@@ -117,10 +117,6 @@ def standard_template_replacements(filepath):
             line = line.replace("=== true", "is true")
             line = line.replace('["", null, false]', '["", none, false]')
 
-            # Use none instead of undefined.
-            line = line.replace(" else undefined", " else none")
-            line = line.replace(": undefined", ": none")
-
             file.write(line)
 
 

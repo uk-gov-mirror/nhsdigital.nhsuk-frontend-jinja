@@ -64,8 +64,8 @@
 {%- macro _dateInputItem(params, item, anyItemHasError) %}
 {#- Support item label as string #}
 {%- set itemLabel = item.label if item.label is mapping else {
-  "text": item.label if item.label is string else none,
-  "html": item.label if item.label is escaped else none
+  "text": item.label if item.label is string else undefined,
+  "html": item.label if item.label is escaped else undefined
 } -%}
 
 {% set itemName = item.name %}
@@ -94,7 +94,7 @@
   {{ input({
     "label": {
       "html": itemLabel.html,
-      "text": itemLabel.text | default(itemName | capitalize, true),
+      "text": itemLabel.text | default(itemName | capitalize),
       "id": itemLabel.id,
       "for": itemLabel.for,
       "classes": "nhsuk-date-input__label" ~ (" " ~ itemLabel.classes if itemLabel.classes),
