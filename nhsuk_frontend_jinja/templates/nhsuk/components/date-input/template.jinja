@@ -49,10 +49,8 @@
   "width": 4
 }) -%}
 
-{#- Jinja compatibility - avoid referencing params.items directly
-  as it clashes with dict.items() -#}
-{%- if params.get("items", []) | length %}
-  {% set dateInputItems = params.get("items", []) %}
+{%- if (params.get("items", []) if params else []) | length %}
+  {% set dateInputItems = (params.get("items", []) if params else []) %}
 {% else %}
   {% set dateInputItems = [
     dateInputDay,
