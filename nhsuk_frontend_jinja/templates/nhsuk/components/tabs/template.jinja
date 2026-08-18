@@ -50,18 +50,15 @@
     "level": 2,
     "className": "nhsuk-tabs__title"
   }) | trim | indent(2) }}
-{#- Jinja compatibility - avoid referencing params.items directly
-  as it clashes with dict.items() -#}
-{%- set items = params.get("items", []) if params else [] -%}
-{% if items | length %}
+{% if (params.get("items", []) if params else []) | length %}
   <ul class="nhsuk-tabs__list">
-    {% for item in items %}
+    {% for item in (params.get("items", []) if params else []) %}
       {% if item %}
         {{- _tabListItem(params, item, loop.index) | trim | indent(4, true) }}
       {% endif %}
     {% endfor %}
   </ul>
-  {% for item in items %}
+  {% for item in (params.get("items", []) if params else []) %}
     {% if item %}
       {{- _tabPanel(params, item, loop.index) | trim | indent(2, true) }}
     {% endif %}

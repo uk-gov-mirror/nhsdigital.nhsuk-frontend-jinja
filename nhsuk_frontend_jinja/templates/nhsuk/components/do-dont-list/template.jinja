@@ -10,9 +10,6 @@
 
 {#- Set icon or (deprecated) type for this component #}
 {%- set icon = "cross" if (params.icon or params.type) == "cross" else "tick" %}
-{#- Jinja compatibility - avoid referencing params.items directly
-  as it clashes with dict.items() -#}
-{%- set items = params.get("items", []) | select("mapping") | list if params else [] %}
 
 {%- macro _listItem(params, data, icon) %}
   {% set item = {
@@ -33,7 +30,7 @@
 
 {% set listHtml %}
 <ul class="nhsuk-list nhsuk-list--{{ icon }}" role="list">
-{% for data in items %}
+{% for data in (params.get("items", []) | select("mapping") | list if params else []) %}
   <li>
     {{ _listItem(params, data, icon) | trim | indent(4) }}
   </li>

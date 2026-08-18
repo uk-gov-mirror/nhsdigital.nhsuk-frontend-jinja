@@ -40,10 +40,6 @@
   {% set classNamesFormGroup = classNamesFormGroup ~ " " ~ params.formGroup.classes %}
 {% endif %}
 
-{#- Jinja compatibility - avoid referencing params.items directly
-  as it clashes with dict.items() -#}
-{%- set items = params.get("items", []) if params else [] -%}
-
 {#- If an id 'prefix' is not passed, fall back to using the name attribute
   instead. We need this for error messages and hints as well -#}
 {% set idPrefix = params.idPrefix if params.idPrefix else params.name %}
@@ -58,8 +54,8 @@
 {%- macro _radioItem(params, item, index) %}
   {#- Support item label as string #}
   {%- set itemLabel = item.label if item.label is mapping else {
-    "text": item.label if item.label is string else none,
-    "html": item.label if item.label is escaped else none
+    "text": item.label if item.label is string else undefined,
+    "html": item.label if item.label is escaped else undefined
   } -%}
 
   {#- Support item hint as string #}
@@ -87,8 +83,8 @@
         {%- if hasHint %} aria-describedby="{{ itemHintId }}"{% endif -%}
         {{- nhsukAttributes(item.attributes) }}>
       {{ label({
-        "html": itemLabel.html | default(item.html, true),
-        "text": itemLabel.text | default(item.text, true),
+        "html": itemLabel.html | default(item.html),
+        "text": itemLabel.text | default(item.text),
         "id": itemLabel.id,
         "for": itemId,
         "classes": "nhsuk-radios__label" ~ (" " ~ itemLabel.classes if itemLabel.classes),
@@ -151,7 +147,7 @@
     {% if params.formGroup.beforeInputs %}
     {{ params.formGroup.beforeInputs.html | safe | trim | indent(4) if params.formGroup.beforeInputs.html else params.formGroup.beforeInputs.text }}
     {% endif %}
-    {% for item in items %}
+    {% for item in (params.get("items", []) if params else []) %}
       {% if item %}
         {{- _radioItem(params, item, loop.index) -}}
       {% endif %}

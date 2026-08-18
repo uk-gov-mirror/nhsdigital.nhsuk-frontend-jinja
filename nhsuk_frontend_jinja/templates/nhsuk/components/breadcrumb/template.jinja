@@ -17,14 +17,10 @@
 
 {%- set ariaLabel = params.ariaLabel | default(params.labelText, true) | default("Breadcrumb", true) -%}
 
-{#- Jinja compatibility - avoid referencing params.items directly
-  as it clashes with dict.items() -#}
-{%- set items = params.get("items", []) if params else [] -%}
-
 <nav class="{{ classNames }}" {%- if params.id %} id="{{ params.id }}"{% endif %} aria-label="{{ ariaLabel }}"
   {{- nhsukAttributes(params.attributes) }}>
   <ol class="nhsuk-breadcrumb__list">
-{% for item in items %}
+{% for item in (params.get("items", []) if params else []) %}
   {% if item.href %}
     <li class="nhsuk-breadcrumb__list-item">
       <a class="nhsuk-breadcrumb__link" href="{{ item.href }}" {{- nhsukAttributes(item.attributes) }}>
@@ -46,7 +42,7 @@
   {% set lastHref = params.href %}
   {% set lastText = params.text %}
 {% else %}
-  {% set lastItem = items | last %}
+  {% set lastItem = (params.get("items", []) if params else []) | last %}
   {% set lastHref = lastItem.href %}
   {% set lastText = lastItem.text %}
 {% endif %}
